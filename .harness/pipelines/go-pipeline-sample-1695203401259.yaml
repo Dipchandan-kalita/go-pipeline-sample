@@ -6,9 +6,9 @@ pipeline:
   properties:
     ci:
       codebase:
-        build: <+input>
         connectorRef: account.Github_OAuth_1695203390848
         repoName: Dipchandan-kalita/go-pipeline-sample
+        build: <+input>
   stages:
     - stage:
         identifier: build
@@ -18,12 +18,45 @@ pipeline:
           execution:
             steps:
               - step:
-                  identifier: gobuild
-                  name: go_build
-                  spec:
-                    command: go build
-                  timeout: ""
                   type: Run
+                  name: Run unit test
+                  identifier: Run_unit_test
+                  spec:
+                    connectorRef: <+input>
+                    image: golang:1.15
+                    shell: Sh
+                    command: |-
+                      set +e
+                      go get gotest.tools/gotestsum
+                      gotestsum --format=standard-verbose --junkfile unit-tests.xml
+                      exit 0
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths:
+                          - "*.xml"
+              - step:
+                  type: Run
+                  name: Build app
+                  identifier: Build_app
+                  spec:
+                    connectorRef: <+input>
+                    image: golang:1.15
+                    shell: Sh
+                    command: |-
+                      set +e
+                      go get gotest.tools/gotestsum
+                      CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
+                      exit 0
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: build and push to docker hub
+                  identifier: build_and_push_to_docker_hub
+                  spec:
+                    connectorRef: <+input>
+                    repo: <+input>
+                    tags:
+                      - latest
               - step:
                   identifier: dockerbuild
                   name: docker_build
