@@ -25,14 +25,6 @@ pipeline:
                   timeout: ""
                   type: Run
               - step:
-                  identifier: gotest
-                  name: go_test
-                  spec:
-                    shell: Sh
-                    command: "package main\n\nimport \"testing\"\n\nfunc TestGreetingSpecificJohn(t *testing.T) {\n\tgreeting := CreateGreeting(\"John\")\n\tif greeting != \"Hello, John\\n\" {\n\t\tt.Errorf(\"Greeting was incorrect, got: %s, want: %s.\", greeting, \"Hello, John\\n\")\n\t}\n}\n\nfunc TestGreetingSpecificDemo(t *testing.T) {\n\tgreeting := CreateGreeting(\"Demo\")\n\tif greeting != \"Hello, Demo\\n\" {\n\t\tt.Errorf(\"Greeting was incorrect, got: %s, want: %s.\", greeting, \"Hello, Demo\\n\")\n\t}\n}\n\nfunc TestShowFailure(t *testing.T) {\n\tgreeting := CreateGreeting(\"Demo1\")\n\tif greeting != \"Hello, Demo\\n\" {\n\t\tt.Errorf(\"Intentional failure. got: %s, want: %s.\", greeting, \"Hello, Demo\\n\")\n\t}\n}\n\n\n\nfunc TestGreetingDefault(t *testing.T) {\n\tgreeting := CreateGreeting(\"\")\n\tif greeting != \"Hello, Guest\\n\" {\n\t\tt.Errorf(\"Greeting was incorrect, got: %s, want: %s.\", greeting, \"Hello, Guest\\n\")\n\t}\n}\n "
-                  timeout: ""
-                  type: Run
-              - step:
                   identifier: dockerbuild
                   name: docker_build
                   spec:
@@ -45,9 +37,9 @@ pipeline:
                   timeout: ""
                   type: Plugin
           platform:
-            arch: Amd64
             os: Linux
+            arch: Amd64
           runtime:
-            spec: {}
             type: Cloud
+            spec: {}
         type: CI
